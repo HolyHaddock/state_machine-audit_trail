@@ -4,7 +4,7 @@ class StateMachine::AuditTrail::Backend < Struct.new(:transition_class, :owner_c
   autoload :ActiveRecord, 'state_machine/audit_trail/backend/active_record'
 
   def log(object, event, from, to, timestamp = Time.now)
-    raise NotImplemented, "Implement in a subclass."
+    raise NotImplementedError, "Implement in a subclass."
   end
   
   # Public creates an instance of the class which does the actual logging
@@ -17,12 +17,9 @@ class StateMachine::AuditTrail::Backend < Struct.new(:transition_class, :owner_c
     if Object.const_defined?('ActiveRecord') && transition_class.ancestors.include?(::ActiveRecord::Base)
       return StateMachine::AuditTrail::Backend::ActiveRecord.new(transition_class, owner_class, context_to_log)
     elsif Object.const_defined?('Mongoid') && transition_class.ancestors.include?(::Mongoid::Document)
-      # Mongoid implementation doesn't yet support additional context fields
-      raise NotImplemented, "Mongoid does not support additional context fields" if context_to_log.present?
-
       return StateMachine::AuditTrail::Backend::Mongoid.new(transition_class, owner_class)
     else
-      raise NotImplemented, "Only support for ActiveRecord and Mongoid is included at this time"
+      raise NotImplementedError, "Only support for ActiveRecord and Mongoid is included at this time"
     end
   end
 end
