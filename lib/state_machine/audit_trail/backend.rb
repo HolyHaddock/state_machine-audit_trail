@@ -17,7 +17,7 @@ class StateMachine::AuditTrail::Backend < Struct.new(:transition_class, :owner_c
     if Object.const_defined?('ActiveRecord') && transition_class.ancestors.include?(::ActiveRecord::Base)
       return StateMachine::AuditTrail::Backend::ActiveRecord.new(transition_class, owner_class, context_to_log)
     elsif Object.const_defined?('Mongoid') && transition_class.ancestors.include?(::Mongoid::Document)
-      return StateMachine::AuditTrail::Backend::Mongoid.new(transition_class, owner_class)
+      return StateMachine::AuditTrail::Backend::Mongoid.new(transition_class, owner_class, context_to_log)
     else
       raise NotImplementedError, "Only support for ActiveRecord and Mongoid is included at this time"
     end

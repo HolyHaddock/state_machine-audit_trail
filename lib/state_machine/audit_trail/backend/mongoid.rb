@@ -17,11 +17,10 @@ class StateMachine::AuditTrail::Backend::Mongoid < StateMachine::AuditTrail::Bac
   # from:   the state of the object prior to the event
   # to:     the state of the object after the event
   def log(object, event, from, to, timestamp = Time.now)
-    tc = transition_class
-    foreign_key_field = tc.relations.keys.first
+    foreign_key_field = owner_class.relations.keys.first
     params = {foreign_key_field => object, :event => event, :from => from, :to => to, :created_at => timestamp}
     [context_to_log].flatten(1).each { |context| params[context] = object.send(context) } unless self.context_to_log.nil?
-    transition_class.create!(params)
+    object.send(foreign_key_field) << transition_class.new(params)
   end
 
 end
